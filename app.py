@@ -67,5 +67,14 @@ def video_feed():
     return Response(gen(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/camera_feed')
+def camera_feed():
+    global video
+    video = cv2.VideoCapture(0)
+    # if not (video.isOpened()):
+    #     return 'Could not connect to camera'
+    return Response(gen(video),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 if __name__ == '__main__':
     app.run(debug=True)
