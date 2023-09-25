@@ -168,6 +168,13 @@
     align-items: center;
     flex-direction: column;
   }
+  .homepage-container .forms-container{
+    display: flex;
+    width: 80%;
+    justify-content: center;
+    align-items: center;
+    gap: 10%;
+  }
   .homepage-container .homepage-title {
     font-size: 3rem;
     font-family: "Poppins", "sans-serif";
