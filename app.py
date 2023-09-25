@@ -3,9 +3,9 @@ import cv2
  
 app = Flask(__name__)
  
-video = cv2.VideoCapture('static/output/abc.mp4') #// if you have second camera you can set first parameter as 1
+video = cv2.VideoCapture(0) #// if you have second camera you can set first parameter as 1
 face_cascade = cv2.CascadeClassifier()
-face_cascade.load(cv2.samples.findFile("static/haarcascade_frontalface_alt.xml")) 
+face_cascade.load(cv2.samples.findFile("static/models/haarcascade_frontalface_alt.xml")) 
 
 @app.route('/')
 def index():
@@ -19,6 +19,7 @@ def fextension(filename):
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    global video
     if 'video' not in request.files:
         return 'No video file found'
     file = request.files['video']
@@ -70,7 +71,6 @@ def video_feed():
 @app.route('/camera_feed')
 def camera_feed():
     global video
-    video = cv2.VideoCapture(0)
     # if not (video.isOpened()):
     #     return 'Could not connect to camera'
     return Response(gen(video),
