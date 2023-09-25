@@ -4,4 +4,4 @@ flask
 flask_mail
 ultralytics
 numpy
-threaded
+threading
