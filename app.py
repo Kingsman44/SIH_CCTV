@@ -5,7 +5,7 @@ app = Flask(__name__)
  
 video = cv2.VideoCapture(0) #// if you have second camera you can set first parameter as 1
 face_cascade = cv2.CascadeClassifier()
-face_cascade.load(cv2.samples.findFile("static/models/haarcascade_frontalface_alt.xml")) 
+face_cascade.load(cv2.samples.findFile("static/models/haarcascade_fullbody.xml")) 
 
 @app.route('/')
 def index():
@@ -49,10 +49,11 @@ def gen(video):
 
         for (x, y, w, h) in faces:
             center = (x + w//2, y + h//2)
-            cv2.putText(image, "X: " + str(center[0]) + " Y: " + str(center[1]), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+            #cv2.putText(image, "X: " + str(center[0]) + " Y: " + str(center[1]), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
             image = cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
             faceROI = frame_gray[y:y+h, x:x+w]
+        cv2.putText(image, "Persons: " + str(len(faces)), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
         ret, jpeg = cv2.imencode('.jpg', image)
 
         frame = jpeg.tobytes()
