@@ -47,7 +47,8 @@ def gen(video):
         try:
             frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         except:
-            redirect('/')
+            print('Video ended in last')
+            return -1
         frame_gray = cv2.equalizeHist(frame_gray)
 
         faces = face_cascade.detectMultiScale(frame_gray)
@@ -83,7 +84,11 @@ def video_feed():
     global video
     if not (video.isOpened()):
         return 'Could not process video'
-    return Response(gen(video),
+    output=gen(video)
+    if (output == -1):
+        print('Video ended')
+        return redirect('/')
+    return Response(output,
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/camera_feed')
