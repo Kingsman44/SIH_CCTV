@@ -1,3 +1,3 @@
 watchdog
-opencv-python-headless
-Flask
+opencv-python
+flask
