@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, redirect
 import cv2
  
 app = Flask(__name__)
@@ -28,9 +28,10 @@ def upload():
         exttype=fextension(file.filename)
         print(exttype)
         if exttype in VIDEO_EXTENSIONS:
-            file.save('static/input/videos/' + file.filename)
+            file.save('static/input/video/' + file.filename)
             print('video')
-            return render_template('preview_video.html', file_name=file.filename, type='video/'+exttype)
+            video = cv2.VideoCapture('static/input/video/' + file.filename)
+            return redirect('/video_feed')
         elif exttype in PHOTO_EXTENSIONS:
             file.save('static/input/photo/' + file.filename)
             print('photo')
