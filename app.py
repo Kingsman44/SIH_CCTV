@@ -6,6 +6,8 @@ app = Flask(__name__)
 video = cv2.VideoCapture(0) #// if you have second camera you can set first parameter as 1
 face_cascade = cv2.CascadeClassifier()
 face_cascade.load(cv2.samples.findFile("static/models/haarcascade_fullbody.xml")) 
+PERSON_THRESHOLD_MED = 5
+PERSON_THRESHOLD_MAX = 7
 
 @app.route('/')
 def index():
@@ -42,7 +44,10 @@ def upload():
 def gen(video):
     while True:
         success, image = video.read()
-        frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        try:
+            frame_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        except:
+            redirect('/')
         frame_gray = cv2.equalizeHist(frame_gray)
 
         faces = face_cascade.detectMultiScale(frame_gray)
@@ -53,9 +58,21 @@ def gen(video):
             image = cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
             faceROI = frame_gray[y:y+h, x:x+w]
-        cv2.putText(image, "Persons: " + str(len(faces)), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+        cv2.putText(image, "Persons: " + str(len(faces)), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 3)
+        no_faces = len(faces)
+        status=""
+        if no_faces < PERSON_THRESHOLD_MED:
+            status = "Green"
+            clor = (0, 255, 0)
+        elif no_faces < PERSON_THRESHOLD_MAX:
+            status = "Yellow"
+            clor = (0, 255, 255)
+        else:
+            status = "Red"
+            clor = (0, 0, 255)
+        cv2.putText(image, "Status: ", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 3)
+        cv2.putText(image, status, (175, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, clor, 3)
         ret, jpeg = cv2.imencode('.jpg', image)
-
         frame = jpeg.tobytes()
         
         yield (b'--frame\r\n'
@@ -64,16 +81,16 @@ def gen(video):
 @app.route('/video_feed')
 def video_feed():
     global video
-    # if not (video.isOpened()):
-    #     return 'Could not connect to camera'
+    if not (video.isOpened()):
+        return 'Could not process video'
     return Response(gen(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/camera_feed')
 def camera_feed():
     global video
-    # if not (video.isOpened()):
-    #     return 'Could not connect to camera'
+    if not (video.isOpened()):
+        return 'Could not connect to camera'
     return Response(gen(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
