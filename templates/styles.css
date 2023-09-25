@@ -1,0 +1,235 @@
+* {
+    bottom: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+  nav {
+    width: 100%;
+    z-index: 1;
+    display: flex;
+    background-color: #05588c;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+    height: 10vh;
+  }
+  
+  .fa-bars {
+    color: #ba68c8;
+    font-size: 2rem;
+    font-weight: 300;
+  }
+  
+  .fa-times {
+    color: #fff;
+  }
+  
+  #logo-icon {
+    width: 4rem;
+  }
+  
+  .nav-menu {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+  
+  nav ul {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    list-style-type: none;
+    align-items: center;
+  }
+  nav ul li {
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    list-style: none;
+  }
+  nav ul li a {
+    display: block;
+    text-decoration: none;
+    padding: 0.7rem;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    font-family: "Urbanist", sans-serif;
+  }
+  nav ul li a:hover {
+    background-color: #fff;
+    color: #05588c;
+    transition: 0.3s ease-in-out;
+  }
+  nav ul li:hover > ul {
+    display: block;
+  }
+  
+  a {
+    text-decoration: none;
+  }
+  
+  #homeli {
+    color: #92e3a9;
+    background-color: rgba(0, 0, 0, 0);
+  }
+  
+  .logo {
+    width: 20%;
+    font-family: "DM Sans", "sans-serif";
+    color: #fff;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  
+  .checkbtn {
+    font-size: 30px;
+    color: #92e3a9;
+    cursor: pointer;
+    display: none;
+  }
+  
+  #check {
+    display: none;
+  }
+  
+  .fa-bars::before {
+    content: "\f0c9";
+  }
+  
+  #profile-btn {
+    padding: 1rem;
+  }
+  
+  @media all and (max-width: 880px) {
+    .checkbtn {
+      display: block;
+      color: #92e3a9;
+    }
+    #logo-icon {
+      font-size: 2.5rem;
+    }
+    .fa-bars {
+      padding: 0.75rem;
+    }
+    .list {
+      margin-top: 20px;
+      position: absolute;
+      height: 100%;
+      z-index: 120;
+      background-color: #1b1b1b;
+      top: 10%;
+      left: -100%;
+      text-align: center;
+      transition: all 0.5s;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: right;
+      align-items: right;
+      padding: 1rem 2rem;
+      border: 3px solid #1b1b1b;
+    }
+    .list li {
+      width: 100%;
+      margin-bottom: 10px;
+      margin-top: 20px;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .list li a {
+      width: 30%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      color: #fff;
+      text-align: left;
+      border-radius: 10px;
+    }
+    .list li a:hover {
+      transition: 0.2s ease;
+      color: #fff;
+      background-color: #1b1b1b;
+      transition: 0.3s ease;
+    }
+    #check:checked ~ ul {
+      left: 0%;
+      transition: all 0.5s ease-in;
+    }
+    #check:checked ~ .checkbtn i::before {
+      content: "\f00d";
+    }
+  }
+  .homepage-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .homepage-container .homepage-title {
+    font-size: 3rem;
+    font-family: "Poppins", "sans-serif";
+    padding: 1rem;
+  }
+  .homepage-container #upload-form {
+    background-color: #fff;
+    width: 60%;
+    border: 1.5px solid #0f0f0f;
+    padding: 2rem;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .homepage-container #upload-form #label {
+    color: #0f0f0f;
+    text-transform: capitalize;
+    font-family: "Poppins", "sans-serif";
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  .homepage-container #upload-form #input-video {
+    width: 20%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    resize: none;
+    margin: 0.5rem 0;
+    color: #fff;
+    outline: none;
+    border: 1.5px solid #0f0f0f;
+    cursor: pointer;
+    border-radius: 0rem;
+  }
+  .homepage-container #upload-form #input-video:focus {
+    border: 0.5px solid #fff;
+    transition: 0.5s ease;
+  }
+  .homepage-container #upload-form #input-label {
+    color: #0f0f0f;
+    font-family: "Poppins", "sans-serif";
+    font-size: 0.8rem;
+  }
+  .homepage-container #upload-form .btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    padding: 0.6rem;
+    border-radius: 4px;
+    background-color: #05588c;
+    border: 1.5px solid #fff;
+    transition: all 0.3s ease-in-out;
+    letter-spacing: 1px;
+    text-decoration: none;
+    margin: 1rem 0;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+  }
+  .homepage-container #upload-form .btn:hover {
+    color: #05588c;
+    border: 1.5px solid #0f0f0f;
+    background-color: #fff;
+  }
