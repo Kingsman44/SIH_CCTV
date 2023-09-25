@@ -38,7 +38,7 @@
     </nav>
     <div class="homepage-container">
 
-        <div class="homepage-title">Monitor CCTV footage.</div>
+        <div class="homepage-title">Monitor CCTV footage crowd.</div>
         <div class="forms-container">
             <form action="{{url_for('upload')}}" method="post" enctype="multipart/form-data" id="upload-form">
                 <label id="label">Upload the video footage.</label>
@@ -46,10 +46,23 @@
                 <label id="input-label">Select the video file</label>
                 <input type="submit" value="Upload" class="btn">
             </form>
-    /
             <div  id="upload-form">
                 <label id="label">Stream from your webcam</label>
                 <a href="/camera_feed"><button type="submit" value="Upload" class="btn">Start</button></a>
+            </div>
+        </div>
+        <br>
+        <div class="homepage-title">Monitor CCTV footage gun.</div>
+        <div class="forms-container">
+            <form action="{{url_for('upload_gun')}}" method="post" enctype="multipart/form-data" id="upload-form">
+                <label id="label">Upload the video footage.</label>
+                <input type="file" name="video"  id="input-video">
+                <label id="input-label">Select the video file</label>
+                <input type="submit" value="Upload" class="btn">
+            </form>
+            <div  id="upload-form">
+                <label id="label">Stream from your webcam</label>
+                <a href="/camera_feed_gun"><button type="submit" value="Upload" class="btn">Start</button></a>
             </div>
         </div>
     </div>

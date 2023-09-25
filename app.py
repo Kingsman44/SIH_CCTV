@@ -19,9 +19,12 @@ mail = Mail(app)
  
 video = cv2.VideoCapture('') #// if you have second camera you can set first parameter as 1
 PERSON_THRESHOLD_MED = 5
-PERSON_THRESHOLD_MAX = 500
+PERSON_THRESHOLD_MAX = 10
 MODEL_FILE="static/models/yolov8n.pt"
 COCO_FILE="static/models/coco.txt"
+
+GUN_MODEL_FILE="static/models/gun.pt"
+GUN_COCO_FILE="static/models/gun.txt"
 
 @app.route('/')
 def index():
@@ -49,6 +52,29 @@ def upload():
             print('video')
             video = cv2.VideoCapture('static/input/video/' + file.filename)
             return redirect('/video_feed_new')
+        elif exttype in PHOTO_EXTENSIONS:
+            file.save('static/input/photo/' + file.filename)
+            print('photo')
+            return render_template('preview_photo.html', file_name=file.filename, type='image/'+exttype)
+    return 'Invalid video file'
+
+
+@app.route('/upload_gun', methods=['POST'])
+def upload_gun():
+    global video
+    if 'video' not in request.files:
+        return 'No video file found'
+    file = request.files['video']
+    if file.filename == '':
+        return 'No video selected'
+    if file:
+        exttype=fextension(file.filename)
+        print(exttype)
+        if exttype in VIDEO_EXTENSIONS:
+            file.save('static/input/video/' + file.filename)
+            print('video')
+            video = cv2.VideoCapture('static/input/video/' + file.filename)
+            return redirect('/video_feed_gun')
         elif exttype in PHOTO_EXTENSIONS:
             file.save('static/input/photo/' + file.filename)
             print('photo')
@@ -147,9 +173,9 @@ def gen_new(video):
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
 
-def gen_new1(video):
+def gen_gun(video):
     # opening the file in read mode
-    my_file = open(COCO_FILE, "r")
+    my_file = open(GUN_COCO_FILE, "r")
     # reading the file
     data = my_file.read()
     # replacing end splitting the text | when newline ('\n') is seen.
@@ -157,7 +183,7 @@ def gen_new1(video):
     my_file.close()
 
     # load a pretrained YOLOv8n model
-    model = YOLO(MODEL_FILE, "v8") 
+    model = YOLO(GUN_MODEL_FILE, "v8") 
     #messagesent=False
     while True:
         ret, frame = video.read()
@@ -170,8 +196,6 @@ def gen_new1(video):
 
         detect_params = model.predict(source=[frame], conf=0.45, save=False)
         DP = detect_params[0].numpy()
-        #print(DP)
-        no_faces=0
         if len(DP) != 0:
             for i in range(len(detect_params[0])):
                 print(i)
@@ -181,35 +205,11 @@ def gen_new1(video):
                 clsID = box.cls.numpy()[0]
                 conf = box.conf.numpy()[0]
                 bb = box.xyxy.numpy()[0]
-
-                cv2.rectangle(frame,(int(bb[0]), int(bb[1])),(int(bb[2]), int(bb[3])),(255,255,255),3,)
-                # Display class name and confidence
-                font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-                cv2.putText(frame,class_list[int(clsID)],(int(bb[0]), int(bb[1]) - 10),font,0.5,(255, 255, 255),1,)
-                if class_list[int(clsID)] == "person":
-                    no_faces=no_faces+1
-
-
-        status=""
-        if no_faces < PERSON_THRESHOLD_MED:
-            status = "Green"
-            clor = (0, 255, 0)
-        elif no_faces < PERSON_THRESHOLD_MAX:
-            status = "Yellow"
-            clor = (0, 255, 255)
-        else:
-            status = "Red"
-            clor = (0, 0, 255)
-            #if not messagesent:
-                #messagesent=True
-            try:
-                sendmessage(['shivansingh999@gmail.com'],'High Crowd Detected in Station',str(no_faces)+' persons detect in station Please take necessary action')
-                cv2.putText(frame, "High Alert Message Sent!!", (50, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 3)
-            except:
-                print('Unable to send Message')
-        cv2.putText(frame, "Persons: " + str(no_faces), (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 3)
-        cv2.putText(frame, "Status: ", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 255), 3)
-        cv2.putText(frame, status, (175, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, clor, 3)
+                if class_list[int(clsID)] == "gun":
+                    cv2.rectangle(frame,(int(bb[0]), int(bb[1])),(int(bb[2]), int(bb[3])),(255,255,255),3,)
+                    # Display class name and confidence
+                    font = cv2.FONT_HERSHEY_COMPLEX_SMALL
+                    cv2.putText(frame,class_list[int(clsID)],(int(bb[0]), int(bb[1]) - 10),font,0.5,(255, 255, 255),1,)
 
         ret, jpeg = cv2.imencode('.jpg', frame)
         frame = jpeg.tobytes()
@@ -225,6 +225,14 @@ def video_feed_new():
     return Response(gen_new(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/video_feed_gun')
+def video_feed_gun():
+    global video
+    if not (video.isOpened()):
+        return 'Could not process video'
+    return Response(gen_gun(video),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 @app.route('/camera_feed')
 def camera_feed():
     global video
@@ -232,6 +240,15 @@ def camera_feed():
     if not (video.isOpened()):
         return 'Could not connect to camera'
     return Response(gen_new(video),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/camera_feed_gun')
+def camera_feed_gun():
+    global video
+    video = cv2.VideoCapture(0)
+    if not (video.isOpened()):
+        return 'Could not connect to camera'
+    return Response(gen_gun(video),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 if __name__ == '__main__':
